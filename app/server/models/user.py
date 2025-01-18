@@ -35,6 +35,7 @@ class User(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     username: str
     password: str
+    salt: str
     profile: Profile
     dh_keys: List[Dict[str, str]] = Field(default=[])
 
@@ -45,6 +46,7 @@ class User(BaseModel):
             "example": {
                 "username": "john_doe",
                 "password": "securepassword",
+                "salt":"hashed_salt",
                 "profile": {
                     "name": "John Doe",
                     "about": "A software engineer passionate about AI.",
@@ -67,6 +69,10 @@ class UserResponse(User):
                 }
             }
         }
+
+class UserRegister(BaseModel):
+    username: str
+    password: str
 
 class UserLogin(BaseModel):
     username: str
