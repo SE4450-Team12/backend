@@ -66,13 +66,20 @@ async def create_user(user: UserRegister, response: Response):
 @router.post("/login")
 async def login(user_login: UserLogin, response: Response):
 
-    user = await db["Users"].find_one({"username": user_login.username, "password": user_login.password})
+    user = await db["Users"].find_one({"username": user_login.username})
     
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email or Password is incorrect."
         )
+
+    if not verify_password(user_login.password, user["salt"], user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email or Password is incorrect."
+        )
+
     
     expiration = datetime.utcnow() + timedelta(minutes=15)
     payload = {
